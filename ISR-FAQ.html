@@ -131,13 +131,6 @@
   }
   .state h2{font-family:"Playfair Display",Georgia,serif;font-size:1.35rem;margin:0 0 .45rem}
   .state p{color:var(--ink-2);margin:0 0 .8rem;max-width:40rem}
-  .suggest-label{font-size:.82rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .5rem}
-  .suggest{display:flex;flex-wrap:wrap;gap:.5rem}
-  .suggest button{
-    font:inherit;font-size:.93rem;cursor:pointer;border:1px solid var(--line-strong);
-    background:var(--surface-2);color:var(--ink);border-radius:999px;padding:.5rem 1rem;min-height:2.75rem;
-  }
-  .suggest button:hover{border-color:var(--gold-ink)}
   .index-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(13.5rem,1fr));gap:.7rem;margin-top:1rem}
   .index-card{border:1px solid var(--line);border-radius:10px;padding:.85rem .95rem;background:var(--surface-2);cursor:pointer;text-align:left;font:inherit;width:100%}
   .index-card:hover{border-color:var(--gold-ink)}
@@ -186,16 +179,9 @@
       <button type="button" class="more-btn" id="more-btn">Show more results</button>
     </div>
 
-    <div class="state" id="empty-state">
-      <p class="suggest-label">Suggested searches</p>
-      <div class="suggest" id="suggest"></div>
-    </div>
-
     <div class="state hidden" id="no-results">
       <h2>No results found</h2>
       <p id="no-results-text">Nothing in the FAQ matches. Try fewer words, a shorter term (for example just &ldquo;insurance&rdquo; or &ldquo;fuel&rdquo;), or check the spelling.</p>
-      <p class="suggest-label">Try one of these instead</p>
-      <div class="suggest" id="suggest-2"></div>
     </div>
   </section>
 
@@ -218,7 +204,6 @@ var FAQ_DATA = [{"category": "Company, Location & Hours", "section": "About Us",
     if (catCounts[e.category] === undefined){ catCounts[e.category] = 0; CATEGORIES.push(e.category); }
     catCounts[e.category]++;
   });
-  var SUGGESTIONS = ["insurance","license","requirements"];
   var PAGE_SIZE = 40;
   var FAQ_URL = "https://www.ilonggo.fun/faq";
 
@@ -241,29 +226,10 @@ var FAQ_DATA = [{"category": "Company, Location & Hours", "section": "About Us",
     clear: document.getElementById("clear-btn"),
     meta: document.getElementById("meta"),
     results: document.getElementById("results"),
-    empty: document.getElementById("empty-state"),
     none: document.getElementById("no-results"),
     moreRow: document.getElementById("more-row"),
     moreBtn: document.getElementById("more-btn")
   };
-
-  /* ---------- suggested queries ---------- */
-  function fillSuggestions(containerId){
-    var c = document.getElementById(containerId);
-    SUGGESTIONS.forEach(function(s){
-      var b = document.createElement("button");
-      b.type = "button";
-      b.textContent = s;
-      b.addEventListener("click", function(){
-        el.q.value = s;
-        runSearch(true);
-        el.q.focus();
-      });
-      c.appendChild(b);
-    });
-  }
-  fillSuggestions("suggest");
-  fillSuggestions("suggest-2");
 
   /* ---------- helpers ---------- */
   function escapeHtml(str){
@@ -333,7 +299,6 @@ var FAQ_DATA = [{"category": "Company, Location & Hours", "section": "About Us",
       el.meta.innerHTML = "";
       el.moreRow.classList.add("hidden");
       el.none.classList.add("hidden");
-      el.empty.classList.remove("hidden");
       return;
     }
 
@@ -378,7 +343,6 @@ var FAQ_DATA = [{"category": "Company, Location & Hours", "section": "About Us",
 
   function render(scroll){
     var total = state.results.length;
-    el.empty.classList.add("hidden");
 
     if (total === 0){
       el.results.innerHTML = "";
